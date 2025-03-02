@@ -1,6 +1,6 @@
 # Project Overview
 
-This project demonstrates the use of the Model Context Protocol (MCP) with LangGraph to create workflows that generate prompts and AI-generated images based on a given topic. The project consists of three main files: `app.py`, `graph.py`, and `ai-image-gen-pipeline.py`. Each file showcases different aspects of using MCP with LangGraph, including the Functional API, Graph API, and integration within Open WebUI Pipelines.
+This project demonstrates the use of the Model Context Protocol (MCP) with LangGraph to create workflows that generate prompts and AI-generated images based on a given topic. The project consists of three main files: `app.py`, `graph.py`, and `ai-image-gen-pipeline.py`. Each file showcases different aspects of using MCP with LangGraph, including the [LangGraph Functional API](https://langchain-ai.github.io/langgraph/reference/func/), [Graph API](https://langchain-ai.github.io/langgraph/), and integration within [Open WebUI Pipelines](https://docs.openwebui.com/pipelines/).
 
 ## Files
 
@@ -37,7 +37,7 @@ This script demonstrates the use of the LangGraph Graph API along with Human-in-
 
 ### ai-image-gen-pipeline.py
 
-This script demonstrates the integration of LangGraph API with Human-in-the-Loop (HIL) within Open WebUI Pipelines. It defines a pipeline for generating prompts and images using MCP, including nodes for generating prompts, processing feedback, and generating images.
+This script demonstrates the integration of LangGraph API with Human-in-the-Loop (HIL) within [Open WebUI Pipelines](https://docs.openwebui.com/pipelines/). It defines a pipeline for generating prompts and images using MCP, including nodes for generating prompts, processing feedback, and generating images.
 
 #### Key Components:
 - **Dependencies**: `aiosqlite`, `langgraph`, `langgraph-checkpoint-sqlite`, `mcp[cli]`.
