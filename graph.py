@@ -7,7 +7,6 @@
 #     "mcp[cli]",
 # ]
 # ///
-import uuid
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import interrupt, Command
@@ -16,7 +15,6 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 import os
 import asyncio
-import sys
 import argparse
 
 server_params = StdioServerParameters(
