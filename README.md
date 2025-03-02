@@ -1,6 +1,6 @@
 # Project Overview
 
-This project demonstrates the use of the Model Context Protocol (MCP) with LangGraph to create workflows that generate prompts and AI-generated images based on a given topic. The project consists of three main files: `app.py`, `graph.py`, and `ai-image-gen-pipeline.py`. Each file showcases different aspects of using MCP with LangGraph, including the [LangGraph Functional API](https://langchain-ai.github.io/langgraph/reference/func/), [Graph API](https://langchain-ai.github.io/langgraph/), and integration within [Open WebUI Pipelines](https://docs.openwebui.com/pipelines/).
+This project demonstrates the use of the Model Context Protocol (MCP) with LangGraph to create workflows that generate prompts and AI-generated images based on a given topic. The project consists of three main files: `app.py`, `graph.py`, and `ai-image-gen-pipeline.py`. Each file showcases different aspects of using MCP with LangGraph, including the [LangGraph Functional API](https://langchain-ai.github.io/langgraph/reference/func/), [Graph API](https://langchain-ai.github.io/langgraph/), and integration within [Open WebUI Pipelines](https://docs.openwebui.com/pipelines/). These scripts utilize the [Comfy MCP Server](https://pypi.org/project/comfy-mcp-server/) to generate AI image prompts and AI images.
 
 ## Files
 
@@ -58,7 +58,7 @@ This script demonstrates the integration of LangGraph API with Human-in-the-Loop
 
 1. **Install Dependencies**: Ensure you have the required dependencies installed.
    ```bash
-   pip install aiosqlite langgraph langgraph-checkpoint-sqlite mcp[cli]
+   pip install aiosqlite langgraph langgraph-checkpoint-sqlite mcp[cli] comfy-mcp-server
    ```
 
 2. **Run the Application**:
