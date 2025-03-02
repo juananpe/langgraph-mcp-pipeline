@@ -45,8 +45,6 @@ This script demonstrates the integration of LangGraph API with Human-in-the-Loop
   - `Pipeline`: Defines the pipeline with nodes for generating prompts, processing feedback, and generating images.
     - `Valves(BaseModel)`: Contains environment variables for MCP server configuration.
 - **Functions**:
-  - `on_startup()`: Initializes the MCP server parameters and builds the state graph.
-  - `on_shutdown()`: Handles shutdown operations.
   - `inlet(body: dict, user: dict) -> dict`: Processes incoming messages.
   - `outlet(body: dict, user: dict) -> dict`: Processes outgoing messages.
   - `pipe(user_message: str, model_id: str, messages: List[dict], body: dict) -> Union[str, Generator, Iterator]`: Defines the main pipeline logic.
