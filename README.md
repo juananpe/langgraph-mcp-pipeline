@@ -68,7 +68,12 @@ This script demonstrates the integration of LangGraph API with Human-in-the-Loop
      ```
    - For `graph.py`:
      ```bash
-     python graph.py --thread_id "your-thread-id" --topic "Your topic here" --feedback "y/n"
+     python graph.py --thread_id "your-thread-id" --topic "Your topic here" 
+     ```
+
+     For feedback:
+     ```bash
+     python graph.py --thread_id "your-thread-id" --feedback "y/n" 
      ```
 
 3. **Environment Variables**: Set the necessary environment variables for MCP server configuration.
