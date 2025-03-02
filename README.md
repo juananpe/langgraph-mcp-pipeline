@@ -76,7 +76,22 @@ This script demonstrates the integration of LangGraph API with Human-in-the-Loop
      python graph.py --thread_id "your-thread-id" --feedback "y/n" 
      ```
 
-3. **Environment Variables**: Set the necessary environment variables for MCP server configuration.
+3. **Using `uv` Utility**: You can also launch `app.py` and `graph.py` using the [uv](https://docs.astral.sh/uv/) utility. This utility manages Python version and dependency management, so there is no need to preinstall dependencies.
+   - For `app.py`:
+     ```bash
+     uv run app.py --topic "Your topic here"
+     ```
+   - For `graph.py`:
+     ```bash
+     uv run graph.py --thread_id "your-thread-id" --topic "Your topic here" 
+     ```
+
+     For feedback:
+     ```bash
+     uv run graph.py --thread_id "your-thread-id" --feedback "y/n" 
+     ```
+
+4. **Environment Variables**: Set the necessary environment variables for MCP server configuration.
    ```bash
    export COMFY_URL="comfy-url"
    export COMFY_URL_EXTERNAL="comfy-url-external"
