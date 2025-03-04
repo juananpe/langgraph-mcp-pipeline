@@ -65,18 +65,14 @@ def workflow_func(saver):
 
         is_approved = "n"
         while is_approved.lower()[0] != "y":
-            prompt_f = generate_prompt(topic)
-            await prompt_f
-            prompt = prompt_f.result()
+            prompt = await generate_prompt(topic)
             is_approved = interrupt({
                 "topic": topic,
                 "prompt": prompt,
                 "action": "Do you like this prompt (y/n)?",
             })
 
-        image_url_f = generate_image(prompt)
-        await image_url_f
-        image_url = image_url_f.result()
+        image_url = await generate_image(prompt)
         return {
             "topic": topic,
             "prompt": prompt,
