@@ -3,12 +3,10 @@
 # dependencies = [
 #     "aiosqlite",
 #     "langgraph",
-#     "langgraph-checkpoint-sqlite",
+#     "langgraph-checkpoint-sqlite==2.0.6",
 #     "mcp[cli]",
 # ]
 # ///
-import uuid
-
 from langgraph.func import entrypoint, task
 from langgraph.types import interrupt, Command
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
@@ -17,6 +15,7 @@ from mcp.client.stdio import stdio_client
 import os
 import asyncio
 import argparse
+import textwrap
 
 server_params = StdioServerParameters(
     command="uvx",
@@ -58,6 +57,16 @@ async def generate_image(prompt: str) -> str:
     return result.content[0].text
 
 
+@task
+def get_feedback(topic: str, prompt: str) -> str:
+    feedback = interrupt({
+        "topic": topic,
+        "prompt": prompt,
+        "action": "Do you like this prompt (y/n)?",
+    })
+    return feedback
+
+
 def workflow_func(saver):
     @entrypoint(checkpointer=saver)
     async def workflow(topic: str) -> dict:
@@ -66,11 +75,7 @@ def workflow_func(saver):
         is_approved = "n"
         while is_approved.lower()[0] != "y":
             prompt = await generate_prompt(topic)
-            is_approved = interrupt({
-                "topic": topic,
-                "prompt": prompt,
-                "action": "Do you like this prompt (y/n)?",
-            })
+            is_approved = await get_feedback(topic, prompt)
 
         image_url = await generate_image(prompt)
         return {
@@ -86,11 +91,14 @@ async def main():
         prog="Comfy UI LangGraph MCP",
         description="Simple script demonstrating MCP server from LangGraph Functional API with Human-in-the-Loop."
     )
-    parser.add_argument("--topic", default="A cat holding 'AIMUG' sign")
+    parser.add_argument("thread_id")
+    parser.add_argument("--topic")
+    parser.add_argument("--feedback")
 
     args = parser.parse_args()
     topic = args.topic
-    thread_id = str(uuid.uuid4())
+    thread_id = args.thread_id
+    feedback = args.feedback
 
     print(f"{thread_id=}")
 
@@ -103,29 +111,46 @@ async def main():
     prompt = topic
     async with AsyncSqliteSaver.from_conn_string("checkpoints.sqlite") as saver:
         workflow = workflow_func(saver)
-        stop = False
-        while not stop:
-            async for item in workflow.astream(prompt, config):
+        state = await workflow.aget_state(config)
+
+        if state.values is not None and state.values != {}:
+            value = state.values
+            print(textwrap.dedent(f"""\
+            Topic: {value['topic']}
+            Prompt: {value['prompt']}
+            Image: {value['image_url']}
+            """))
+            return
+
+        current_interrupt = state.tasks[0].interrupts[0].value if len(
+            state.tasks) > 0 and len(state.tasks[0].interrupts) > 0 else None
+        if current_interrupt is not None:
+            value = current_interrupt
+            print(textwrap.dedent(f"""\
+            Topic: {value['topic']}
+            Prompt: {value['prompt']}
+            Action: {value['action']}
+            """))
+            if feedback is not None:
+                prompt = Command(resume=feedback)
+            else:
+                return
+
+        if prompt is not None:
+            async for item in workflow.astream(prompt, config, stream_mode="updates"):
                 step = list(item.keys())[0]
                 print(f"Step: {step}")
                 if "workflow" in item:
                     # print(item)
                     image_url = item['workflow']['image_url']
                     print(f"Image URL: {image_url}")
-                    stop = True
-                    break
-                # continue
                 if "__interrupt__" in item:
                     # print(item)
                     value = item['__interrupt__'][0].value
-                    print(f"Prompt: {value['prompt']}")
-                    hil_input = input(
-                        f"{value['action']}: ")
-                    if len(hil_input.strip()) == 0:
-                        hil_input = "y"
-                    prompt = Command(resume=hil_input)
-                else:
-                    pass
+                    print(textwrap.dedent(f"""\
+                    Prompt: {value['prompt']}
+                    {value['action']}: 
+                    """))
 
 
 if __name__ == "__main__":
