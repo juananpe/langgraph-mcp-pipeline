@@ -14,10 +14,11 @@ This script demonstrates the use of the LangGraph Functional API along with Huma
   - `run_tool(tool: str, args: dict) -> str`: Runs a tool using the MCP server.
   - `generate_prompt(topic: str) -> str`: Generates a prompt for a given topic.
   - `generate_image(prompt: str) -> str`: Generates an image based on a given prompt.
+  - `get_feedback(topic: str, prompt: str) -> str`: Collects user feedback on the generated prompt.
   - `workflow_func(saver)`: Defines the workflow function with checkpointing.
 - **Main Function**: 
-  - Parses command-line arguments to get the topic.
-  - Initializes the workflow and runs it, handling user feedback.
+  - Parses command-line arguments to get thread id and optionally the topic and feedback.
+  - Initializes the workflow and runs it, based on the provided input.
 
 ### graph.py
 
