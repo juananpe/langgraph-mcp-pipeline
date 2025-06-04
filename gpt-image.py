@@ -1,23 +1,25 @@
 import os
-import openai
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import requests
 
 # Set your OpenAI API key
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Define your prompt
 prompt = "A futuristic cityscape at sunset"
 
 # Generate the image
-response = openai.Image.create(
-    model="gpt-image-1",
-    prompt=prompt,
-    n=1,
-    size="512x512"
-)
+response = client.images.generate(model="dall-e-3",
+prompt=prompt,
+n=1,
+size="1024x1024")
 
 # Extract the image URL from the response
-image_url = response['data'][0]['url']
+image_url = response.data[0].url
 
 # Download and save the image
 image_data = requests.get(image_url).content

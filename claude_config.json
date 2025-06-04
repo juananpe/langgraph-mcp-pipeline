@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "image-generator": {
+      "command": "uv",
+      "args": [
+        "run",
+        "main.py"
+      ],
+      "cwd": "/opt/agentes/langgraph-mcp-pipeline"
+    }
+  }
+}
