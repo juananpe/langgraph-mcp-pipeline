@@ -5,6 +5,9 @@
 #     "langgraph",
 #     "langgraph-checkpoint-sqlite",
 #     "mcp[cli]",
+#     "openai",
+#     "python-dotenv",
+#     "requests",
 # ]
 # ///
 from typing_extensions import TypedDict
@@ -17,18 +20,13 @@ import os
 import asyncio
 import argparse
 
+# Updated server parameters for our DALL-E MCP server
 server_params = StdioServerParameters(
-    command="uvx",
-    args=["comfy-mcp-server"],
+    command="uv",
+    args=["run", "main.py"],
+    cwd=os.path.dirname(os.path.abspath(__file__)),
     env={
-        "COMFY_URL": os.getenv("COMFY_URL"),
-        "COMFY_URL_EXTERNAL": os.getenv("COMFY_URL_EXTERNAL"),
-        "COMFY_WORKFLOW_JSON_FILE": os.getenv("COMFY_WORKFLOW_JSON_FILE"),
-        "PROMPT_NODE_ID": os.getenv("PROMPT_NODE_ID"),
-        "OUTPUT_NODE_ID": os.getenv("OUTPUT_NODE_ID"),
-        "OUTPUT_MODE": "url",
-        "OLLAMA_API_BASE": os.getenv("OLLAMA_API_BASE"),
-        "PROMPT_LLM": os.getenv("PROMPT_LLM"),
+        "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY"),
         "PATH": os.getenv("PATH"),
     }
 )
@@ -51,17 +49,42 @@ async def run_tool(tool: str, args: dict) -> str:
 
 
 async def generate_prompt(state: State) -> State:
+    """Generate an enhanced prompt for DALL-E based on the topic"""
     topic = state["topic"]
-    result = await run_tool("generate_prompt", {"topic": topic})
-    # print(f"Tool: generate_prompt, Input: {topic}, Result: {result}")
-    state["prompt"] = result.content[0].text
+    
+    # Enhanced prompt generation for better DALL-E results
+    enhanced_prompts = {
+        "cat": f"{topic}, highly detailed, photorealistic, professional photography, studio lighting",
+        "robot": f"{topic}, futuristic design, sleek metallic surfaces, LED details, cinematic lighting",
+        "landscape": f"{topic}, breathtaking vista, golden hour lighting, ultra-wide angle, 8K quality",
+        "portrait": f"{topic}, professional portrait, soft natural lighting, shallow depth of field",
+        "abstract": f"{topic}, abstract art style, vibrant colors, dynamic composition, modern art",
+    }
+    
+    # Simple keyword matching or use the topic directly with enhancement
+    enhanced_prompt = topic
+    for keyword, template in enhanced_prompts.items():
+        if keyword.lower() in topic.lower():
+            enhanced_prompt = template
+            break
+    else:
+        # Default enhancement if no keyword matches
+        enhanced_prompt = f"{topic}, high quality, detailed, professional, artistic"
+    
+    state["prompt"] = enhanced_prompt
     return state
 
 
 async def generate_image(state: State) -> State:
+    """Generate image using DALL-E MCP server"""
     prompt = state["prompt"]
-    result = await run_tool("generate_image", {"prompt": prompt})
-    # print(f"Tool: generate_image, Input: {prompt}, Result: {result}")
+    result = await run_tool("generate_image", {
+        "prompt": prompt,
+        "model": "dall-e-3",
+        "size": "1024x1024",
+        "quality": "standard"
+    })
+    # The result should contain the file path and success message
     state["image_url"] = result.content[0].text
     return state
 
@@ -94,11 +117,11 @@ builder.add_edge("generate_image", END)
 
 async def main():
     parser = argparse.ArgumentParser(
-        prog="Comfy UI LangGraph MCP",
-        description="Simple script demonstrating MCP server from LangGraph Graph API with Human-in-the-Loop."
+        prog="DALL-E LangGraph MCP",
+        description="Simple script demonstrating DALL-E MCP server from LangGraph Graph API with Human-in-the-Loop."
     )
-    parser.add_argument("thread_id")
-    parser.add_argument("--topic", default="A cat holding 'AIMUG' sign")
+    parser.add_argument("--thread_id")
+    parser.add_argument("--topic", default="A cute robot holding a 'Hello World' sign")
     parser.add_argument("--feedback")
 
     args = parser.parse_args()
@@ -129,7 +152,7 @@ async def main():
                     f"Prompt: {value['prompt']}\n\nAction: {value['action']}")
             elif "generate_image" in item:
                 value = item['generate_image']
-                print(f"Image: {value['image_url']}")
+                print(f"Generated: {value['image_url']}")
 
 
 if __name__ == "__main__":
