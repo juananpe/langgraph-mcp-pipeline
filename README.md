@@ -92,16 +92,15 @@ This script demonstrates the integration of LangGraph API with Human-in-the-Loop
      uv run graph.py --thread_id "your-thread-id" --feedback "y/n" 
      ```
 
-4. **Environment Variables**: Set the necessary environment variables for MCP server configuration.
+4. **Environment Variables**: Set the necessary environment variables for the OPENAI API key.
    ```bash
-   export COMFY_URL="comfy-url"
-   export COMFY_URL_EXTERNAL="comfy-url-external"
-   export COMFY_WORKFLOW_JSON_FILE="path-to-workflow-json-file"
-   export PROMPT_NODE_ID="prompt-node-id"
-   export OUTPUT_NODE_ID="output-node-id"
-   export OLLAMA_API_BASE="ollama-api-base"
-   export PROMPT_LLM="prompt-llm"
+   export OPENAI_API_KEY="your-openai-api-key"
    ```
+   or .env file:
+   ```
+   OPENAI_API_KEY=your-openai-api-key
+   ```
+
 
 ## Contributing
 
